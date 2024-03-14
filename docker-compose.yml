@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  database_api:
+    container_name: kiweakApiDB
+    image: mariadb:lts
+    restart: always
+    env_file:
+      - path: ./env/db.env
+        required: true
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin_api:
+    container_name: kiweakApiDBView
+    image: phpmyadmin:5.2.1
+    env_file:
+      - path: ./env/dbview.env
+        required: true
+    ports:
+      - "8081:80"
+    depends_on:
+      - database_api
+
+  nest_api:
+    container_name: kiweakNest
+    build:
+      context: ./kiweak-route
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - path: ./env/nest.env
+        required: true
+    volumes:
+      - ./kiweak-route/src:/usr/src/app/src
+    depends_on:
+      - database_api
+      - phpmyadmin_api
+
+volumes:
+  db_data:
