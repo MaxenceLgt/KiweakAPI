@@ -8,6 +8,8 @@ RUN npm i -g pnpm
 
 RUN pnpm i
 
+RUN npx prisma generate
+
 EXPOSE 3000
 
 CMD ["pnpm", "run", "start:dev"]
